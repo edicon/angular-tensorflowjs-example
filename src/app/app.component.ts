@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
   elementHeight: number;
   intrinsicWidth: number;
   intrinsicHeight: number;
-  aspectRatio: number;
+  aspectRatio = 1;
   stopDetection = false;
 
   constructor(private cdRef: ChangeDetectorRef) {
