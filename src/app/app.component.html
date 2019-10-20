@@ -6,10 +6,10 @@
     (canplay)="onVideoCanPlay()"
     loop
     crossorigin="anonymous"
+    width="320" height="180"
     #videoRef
     src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4">
   </video>
-
 </div>
 
 <svg
@@ -45,3 +45,10 @@
 <button (click)="videoRef.play()" >PLAY</button>
 <button (click)="videoRef.pause()" >PAUSE</button>
 <button (click)="toggleSvgOverlay()" >TOGGLE OVERLAY</button>
+
+<div *ngFor="let detection of currentDetections">
+  videoBoundingRect: {{videoBoundingRect.width}}/{{videoBoundingRect.height}}
+  elementWidth/Height: {{elementWidth}}/{{elementHeight}}
+  videoWidth/Height: {{videoWidth}}/{{videoHeight}}
+  {{detection.bbox[0]}}, {{detection.bbox[1]}}, {{detection.bbox[2]}}, {{detection.bbox[3]}}
+</div>

@@ -25,6 +25,11 @@ export class AppComponent implements OnInit {
 
   videoBoundingRect;
   svgEnabled = true;
+  // Debug
+  elementWidth: number;
+  elementHeight: number;
+  videoWidth: number;
+  videoHeight: number;
 
   constructor(private cdRef: ChangeDetectorRef) {
 
@@ -38,12 +43,23 @@ export class AppComponent implements OnInit {
 
   async onVideoCanPlay() {
     this.videoBoundingRect = this.videoRef.nativeElement.getBoundingClientRect();
+    this.elementWidth = this.videoRef.nativeElement.width;
+    this.elementHeight = this.videoRef.nativeElement.height;
+    this.videoWidth = this.videoRef.nativeElement.videoWidth;
+    this.videoHeight = this.videoRef.nativeElement.videoHeight;
   }
 
   async detectFrame() {
 
     if (this.model) {
-        this.currentDetections = await this.model.detect(this.videoRef.nativeElement);
+        const currentDetections = await this.model.detect(this.videoRef.nativeElement);
+        this.currentDetections = currentDetections.map( detection => {
+          detection.bbox[0] = detection.bbox[0] / 4;
+          detection.bbox[1] = detection.bbox[1] / 4;
+          detection.bbox[2] = detection.bbox[2] / 4;
+          detection.bbox[3] = detection.bbox[3] / 4;
+          return detection;
+        });
         this.cdRef.markForCheck();
         requestAnimationFrame(async () => {
           await this.detectFrame();
