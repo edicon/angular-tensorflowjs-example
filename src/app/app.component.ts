@@ -24,6 +24,9 @@ export class AppComponent implements OnInit {
 
   currentDetections: DetectedObject[];
 
+  videoWidth = 320;  // 1028
+  videoHeight = 180; // 720
+  demoVideoUrl = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4';
   videoBoundingRect;
   svgEnabled = true;
 
@@ -43,6 +46,12 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     this.model = await cocoSsd.load({base: 'lite_mobilenet_v2'});
+    this.videoRef.nativeElement.onloadeddata = async () => {
+      // TODO: Check?
+      if ( !environment.production ) {
+        console.log('video.loaded');
+      }
+    };
     await this.detectFrame();
     await this.videoRef.nativeElement.play();
   }

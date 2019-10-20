@@ -2,13 +2,13 @@
 
 <div class="video-container">
   <video
+    #videoRef
     class="video-area"
     (canplay)="onVideoCanPlay()"
     loop
     crossorigin="anonymous"
-    width="320" height="180"
-    #videoRef
-    src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4">
+    [width]="videoWidth" [height]="videoHeight"
+    [src]="demoVideoUrl" >
   </video>
 </div>
 
