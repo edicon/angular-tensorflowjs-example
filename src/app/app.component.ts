@@ -7,7 +7,8 @@ import {
   ViewChild
 } from '@angular/core';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
-import {DetectedObject} from '@tensorflow-models/coco-ssd';
+import { DetectedObject } from '@tensorflow-models/coco-ssd';
+import { environment } from './../environments/environment.prod';
 
 @Component({
   selector: 'app-root',
@@ -25,14 +26,19 @@ export class AppComponent implements OnInit {
 
   videoBoundingRect;
   svgEnabled = true;
+
   // Debug
+  debug = false;
   elementWidth: number;
   elementHeight: number;
-  videoWidth: number;
-  videoHeight: number;
+  intrinsicWidth: number;
+  intrinsicHeight: number;
+  aspectRatio: number;
 
   constructor(private cdRef: ChangeDetectorRef) {
-
+    if ( !environment.production ) {
+      this.debug = true;
+    }
   }
 
   async ngOnInit() {
@@ -43,10 +49,12 @@ export class AppComponent implements OnInit {
 
   async onVideoCanPlay() {
     this.videoBoundingRect = this.videoRef.nativeElement.getBoundingClientRect();
+
     this.elementWidth = this.videoRef.nativeElement.width;
     this.elementHeight = this.videoRef.nativeElement.height;
-    this.videoWidth = this.videoRef.nativeElement.videoWidth;
-    this.videoHeight = this.videoRef.nativeElement.videoHeight;
+    this.intrinsicWidth = this.videoRef.nativeElement.videoWidth;
+    this.intrinsicHeight = this.videoRef.nativeElement.videoHeight;
+    this.aspectRatio = this.intrinsicWidth / this.elementWidth;
   }
 
   async detectFrame() {
@@ -54,10 +62,10 @@ export class AppComponent implements OnInit {
     if (this.model) {
         const currentDetections = await this.model.detect(this.videoRef.nativeElement);
         this.currentDetections = currentDetections.map( detection => {
-          detection.bbox[0] = detection.bbox[0] / 4;
-          detection.bbox[1] = detection.bbox[1] / 4;
-          detection.bbox[2] = detection.bbox[2] / 4;
-          detection.bbox[3] = detection.bbox[3] / 4;
+          detection.bbox[0] = detection.bbox[0] / this.aspectRatio;
+          detection.bbox[1] = detection.bbox[1] / this.aspectRatio;
+          detection.bbox[2] = detection.bbox[2] / this.aspectRatio;
+          detection.bbox[3] = detection.bbox[3] / this.aspectRatio;
           return detection;
         });
         this.cdRef.markForCheck();

@@ -46,9 +46,11 @@
 <button (click)="videoRef.pause()" >PAUSE</button>
 <button (click)="toggleSvgOverlay()" >TOGGLE OVERLAY</button>
 
-<div *ngFor="let detection of currentDetections">
-  videoBoundingRect: {{videoBoundingRect.width}}/{{videoBoundingRect.height}}
-  elementWidth/Height: {{elementWidth}}/{{elementHeight}}
-  videoWidth/Height: {{videoWidth}}/{{videoHeight}}
-  {{detection.bbox[0]}}, {{detection.bbox[1]}}, {{detection.bbox[2]}}, {{detection.bbox[3]}}
+<div *ngIf="debug">
+  <div *ngFor="let detection of currentDetections">
+    videoBoundingRect: {{videoBoundingRect.width}}/{{videoBoundingRect.height}}
+    elementWidth/Height: {{elementWidth}}/{{elementHeight}}
+    intrinsicWidth/Height: {{intrinsicWidth}}/{{intrinsicHeight}}
+    {{detection.bbox[0]}}, {{detection.bbox[1]}}, {{detection.bbox[2]}}, {{detection.bbox[3]}}
+  </div>
 </div>
