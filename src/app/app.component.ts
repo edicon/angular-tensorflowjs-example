@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
   intrinsicWidth: number;
   intrinsicHeight: number;
   aspectRatio: number;
+  stopDetection = false;
 
   constructor(private cdRef: ChangeDetectorRef) {
     if ( !environment.production ) {
@@ -45,15 +46,31 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.initVideo();
     this.model = await cocoSsd.load({base: 'lite_mobilenet_v2'});
-    this.videoRef.nativeElement.onloadeddata = async () => {
-      // TODO: Check?
-      if ( !environment.production ) {
-        console.log('video.loaded');
-      }
-    };
     await this.detectFrame();
     await this.videoRef.nativeElement.play();
+  }
+  initVideo() {
+    this.videoRef.nativeElement.addEventListener('loadeddata', (event) => {
+      console.log('loaded');
+    });
+    this.videoRef.nativeElement.addEventListener('loadedmetadata', (event) => {
+      console.log('loadedmetadata');
+    });
+    this.videoRef.nativeElement.addEventListener('seeked', async (event) => {
+      console.log('seeked');
+      // for 'loop' property
+      this.stopDetection = false;
+      this.videoRef.nativeElement.play();
+      await this.detectFrame();
+    });
+    this.videoRef.nativeElement.addEventListener('ended', (event) => {
+      console.log('ended');
+      // for 'loop' property
+      this.stopDetection = true;
+      this.videoRef.nativeElement.currentTime = 0.0;
+    });
   }
 
   async onVideoCanPlay() {
@@ -68,7 +85,7 @@ export class AppComponent implements OnInit {
 
   async detectFrame() {
 
-    if (this.model) {
+    if (this.model && !this.stopDetection ) {
         const currentDetections = await this.model.detect(this.videoRef.nativeElement);
         this.currentDetections = currentDetections.map( detection => {
           detection.bbox[0] = detection.bbox[0] / this.aspectRatio;
